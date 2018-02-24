@@ -1,16 +1,17 @@
 var async = require('async');
-var i2c = require('i2c');
+var i2c = require('i2c-bus');
 
-module.exports = function BMP085(options) {
+module.exports = function BMP180(options) {
   var sensor = function() {};
-  var wire = new i2c(options.address);
+  var i2cOpen = new i2c(options.address);
+  var i2cAddr=options.address;
   var cal = {};
 
-  var BMP085_CONTROL_REGISTER  = 0xF4;
-  var BMP085_SELECT_TEMP       = 0x2E;
-  var BMP085_SELECT_PRESSURE   = 0x34;
-  var BMP085_CONVERSION_RESULT = 0xF6;
-  var BMP085_XLSB              = 0xF7;
+  var BMP180_CONTROL_REGISTER  = 0xF4;
+  var BMP180_SELECT_TEMP       = 0x2E;
+  var BMP180_SELECT_PRESSURE   = 0x34;
+  var BMP180_CONVERSION_RESULT = 0xF6;
+  var BMP180_XLSB              = 0xF7;
   
   sensor.scan = function () {
     wire.scan(function (err, data) {
@@ -56,25 +57,25 @@ module.exports = function BMP085(options) {
     async.waterfall([
       function (callback) {
         // Write select pressure command to control register
-        wire.writeBytes(BMP085_CONTROL_REGISTER,
-                        [BMP085_SELECT_PRESSURE + (options.mode << 6)]);
+        i2cOpen.writeByte(i2cAddr,i2cAddrBMP180_CONTROL_REGISTER,
+                        [BMP180_SELECT_PRESSURE + (options.mode << 6)]);
         setTimeout(function () { 
           callback(null); }, 28);
       },
       function (callback) {
         // Read uncalibrated pressure.
-        wire.readBytes(BMP085_CONVERSION_RESULT, 3, function (err, data) {
+        i2cOpen.readI2cBlock(i2cAddr.BMP180_CONVERSION_RESULT, 3,data, function (err,nbytes,data) {
           callback(null, ((data[0] << 16) + (data[1] << 8) + data[2]) 
                    >> (8 - options.mode));
         });
       },
       function (pressure, callback) {
-        wire.writeBytes(BMP085_CONTROL_REGISTER, [BMP085_SELECT_TEMP]);
+        i2cOpen.writeByte(i2cAddr,BMP180_CONTROL_REGISTER, [BMP180_SELECT_TEMP]);
         setTimeout(function () { 
           callback(null, pressure); }, 8);
       },
       function (pressure, callback) {
-        wire.readBytes(BMP085_CONVERSION_RESULT, 2, function (err, data) {
+        i2cOpen.readI2cBlock(i2cAddr,BMP180_CONVERSION_RESULT, 2, function (err,nbytes, data) {
           callback(null, [pressure, toU16(data[0], data[1])]);
         });
       }

@@ -1,10 +1,10 @@
 {
-  "name": "bmp085-sensor",
+  "name": "bmp180-sensor",
   "version": "0.0.4",
-  "description": "A module to interface a BMP085 temperature and pressure sensor to the raspberry pi.",
+  "description": "A module to interface a BMP180 temperature and pressure sensor to the raspberry pi.",
   "main": "index.js",
   "dependencies": {
-    "i2c" : "*",
+    "i2c-bus" : "*",
     "async": "~0.2.9"
   },
   "devDependencies": {},
@@ -13,10 +13,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dbridges/bmp085.git"
+    "url": "https://github.com/baslking/bmp180.git"
   },
   "keywords": [
-    "bmp085",
+    "bmp180",
     "raspberry",
     "pi",
     "i2c"
@@ -24,7 +24,7 @@
   "author": "Daniel Bridges",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dbridges/bmp085/issues"
+    "url": "https://github.com/baslking/bmp180/issues"
   },
-  "homepage": "https://github.com/dbridges/bmp085"
+  "homepage": "https://github.com/baslking/bmp180"
 }

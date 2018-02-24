@@ -1,6 +1,6 @@
-var BMP085 = require('./index.js');
+var BMP180 = require('./index.js');
 
-var sensor = BMP085({address: 0x77,
+var sensor = BMP180({address: 0x77,
                      mode: 3,
                      units: 'metric'});
 
