@@ -9,7 +9,25 @@ module.exports = function BMP085(options) {
     units: 'metric'
   };
   options.address = options.address || 0x77;
-  var wire = new i2c(options.address);
+  var wire;
+  if (process.iotjs) {
+    options.bus = options.bus || 1;
+    options.device = options.device || '/dev/i2c-1';
+    wire = i2c.openSync(options);
+    wire.writeBytes = function(offset, bytes, callback) {
+      var bytes = [offset].concat(bytes);
+      this.writeSync(bytes);
+      callback && callback(null);
+    }
+    wire.readBytes = function(offset, len, callback) {
+      this.writeSync([offset]);
+      this.read(len, function(err, res) {
+        callback && callback(err, res);
+      });
+    }
+  } else {
+    wire = new i2c(options.address);
+  }
   var cal = {};
 
   var BMP085_CONTROL_REGISTER  = 0xF4;
